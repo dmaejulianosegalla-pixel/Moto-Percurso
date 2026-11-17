@@ -1,0 +1,16 @@
+{
+  "name": "MotoGPS — Gravador & Planejador de Percursos",
+  "short_name": "MotoGPS",
+  "description": "Grave percursos de moto, planeje rotas e exporte GPX direto do navegador.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0e1216",
+  "theme_color": "#10151b",
+  "orientation": "any",
+  "lang": "pt-BR",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
