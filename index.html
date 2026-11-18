@@ -22,7 +22,8 @@
   --text:#152230; --muted:#5d6f80;
   --green:#16a34a; --red:#e5484d; --teal:#0d9488; --amber:#d97706; --violet:#8b5cf6;
   --disp:'Chakra Petch',sans-serif; --body:'Sora',sans-serif;
-  --peek:150px;
+  --peek:70px; /* gaveta recolhida: só a faixa de opções */
+  --dock-gap:calc(env(safe-area-inset-bottom, 0px) + 10px); /* rodapé acima dos botões do Android */
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{height:100%}
@@ -36,8 +37,7 @@ body{
 button{font-family:inherit;touch-action:manipulation}
 :focus-visible{outline:2px solid var(--primary);outline-offset:2px}
 .hidden{display:none!important}
-.app{height:100vh;height:100dvh;display:flex;flex-direction:column;
-  padding-bottom:env(safe-area-inset-bottom,0px)} /* não sobrepõe os botões do telefone */
+.app{height:100vh;height:100dvh;display:flex;flex-direction:column}
 
 /* ---------- Topbar slim ---------- */
 .top{display:flex;align-items:center;justify-content:space-between;gap:10px;
@@ -71,17 +71,17 @@ button{font-family:inherit;touch-action:manipulation}
 .clock{font:600 13px var(--disp);color:var(--muted);letter-spacing:.08em;min-width:40px;text-align:right}
 .stripe{height:3px;flex:none;background:repeating-linear-gradient(-45deg,var(--primary) 0 10px,#e4edf5 10px 20px);opacity:.9}
 
-/* ---------- Layout / mapa ---------- */
+/* ---------- Layout / mapa (edge-to-edge) ---------- */
 .layout{flex:1;min-height:0;position:relative}
 #mapwrap{position:absolute;inset:0}
 #map{height:100%;z-index:1}
-#mapwrap .leaflet-bottom{bottom:calc(var(--peek) + 8px)}
+#mapwrap .leaflet-bottom{bottom:calc(var(--peek) + var(--dock-gap) + 8px)}
 
-/* ---------- Gaveta (bottom sheet) slim ---------- */
-.panel{position:absolute;left:0;right:0;bottom:0;z-index:1200;
-  height:min(80dvh,640px);display:flex;flex-direction:column;
-  border-radius:16px 16px 0 0;border:1px solid var(--line);border-bottom:0;
-  box-shadow:0 -14px 44px -14px rgba(21,34,48,.28);
+/* ---------- Gaveta flutuante (bottom sheet) ---------- */
+.panel{position:absolute;left:10px;right:10px;bottom:var(--dock-gap);z-index:1200;
+  height:min(78dvh,640px);display:flex;flex-direction:column;
+  border-radius:16px;border:1px solid var(--line);
+  box-shadow:0 12px 44px -12px rgba(21,34,48,.35);
   background:
    linear-gradient(rgba(21,34,48,.025) 1px,transparent 1px) 0 0/26px 26px,
    linear-gradient(90deg,rgba(21,34,48,.025) 1px,transparent 1px) 0 0/26px 26px,
@@ -90,21 +90,23 @@ button{font-family:inherit;touch-action:manipulation}
   transition:transform .32s cubic-bezier(.2,.9,.25,1)}
 .panel.open{transform:translateY(0)}
 .panel.dragging{transition:none}
-.sheet-handle{flex:none;height:20px;display:grid;place-items:center;cursor:grab;touch-action:none;user-select:none}
-.sheet-handle::before{content:'';width:48px;height:4px;border-radius:99px;background:var(--line2);transition:background .15s}
+.sheet-handle{flex:none;height:16px;display:grid;place-items:center;cursor:grab;touch-action:none;user-select:none}
+.sheet-handle::before{content:'';width:44px;height:4px;border-radius:99px;background:var(--line2);transition:background .15s}
 .sheet-handle:active::before{background:var(--primary)}
 @media(min-width:940px){
+  :root{--dock-gap:0px}
   .layout{display:flex;flex-direction:row}
   #mapwrap{position:relative;inset:auto;flex:1;min-height:0}
   #mapwrap .leaflet-bottom{bottom:10px}
-  .panel{position:relative;inset:auto;order:-1;width:432px;flex:none;height:auto;
+  .panel{position:relative;inset:auto;left:auto;right:auto;bottom:auto;order:-1;width:432px;flex:none;height:auto;
     transform:none!important;transition:none;border-radius:0;border:0;border-right:1px solid var(--line);box-shadow:none}
   .sheet-handle{display:none}
   .fab{bottom:32px}
+  #toasts{bottom:20px}
 }
 
 /* ---------- Abas + controles compactos ---------- */
-.tabs{display:flex;gap:6px;padding:6px 8px 8px;border-bottom:1px solid var(--line);flex:none;align-items:stretch}
+.tabs{display:flex;gap:6px;padding:4px 8px 8px;border-bottom:1px solid var(--line);flex:none;align-items:stretch}
 .tabbtn{flex:1;min-width:0;display:flex;align-items:center;justify-content:center;gap:6px;padding:9px 4px;
   border:0;border-radius:10px;background:transparent;color:var(--muted);cursor:pointer;
   font:600 11px var(--disp);letter-spacing:.08em;text-transform:uppercase;transition:.18s;
@@ -245,7 +247,8 @@ input[type=text]:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(11,
 .layerbox button{padding:8px 13px;border:0;background:none;color:var(--muted);cursor:pointer;
   font:600 10.5px var(--disp);letter-spacing:.09em;text-transform:uppercase;transition:.15s}
 .layerbox button.active{background:var(--primary);color:#fff}
-.fab{position:absolute;right:10px;bottom:calc(var(--peek) + 8px);z-index:1100;width:44px;height:44px;border-radius:12px;
+.fab{position:absolute;right:10px;bottom:calc(var(--peek) + var(--dock-gap) + 8px);z-index:1100;
+  width:44px;height:44px;border-radius:12px;
   background:rgba(255,255,255,.94);border:1px solid var(--line);color:var(--primary);
   display:grid;place-items:center;cursor:pointer;backdrop-filter:blur(6px);transition:.15s;
   box-shadow:0 4px 14px -4px rgba(21,34,48,.25)}
@@ -290,7 +293,8 @@ input[type=text]:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(11,
 #cfMsg{font-size:13.5px;line-height:1.6;color:var(--muted)}
 
 /* ---------- Toasts ---------- */
-#toasts{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom));
+#toasts{position:fixed;left:50%;transform:translateX(-50%);
+  bottom:calc(var(--peek) + var(--dock-gap) + 10px);
   z-index:3000;display:flex;flex-direction:column;align-items:center;gap:8px;width:max-content;max-width:92vw;pointer-events:none}
 .toast{background:#fff;border:1px solid var(--line2);border-left:3px solid var(--teal);
   padding:11px 15px;border-radius:11px;color:var(--text);font:500 13px var(--body);
@@ -506,7 +510,7 @@ const ICO_TRASH='<svg viewBox="0 0 24 24" width="15" height="15" fill="currentCo
 
 /* ================= gaveta (bottom sheet) ================= */
 const panel=$('#panel'),sheetHandle=$('#sheetHandle');
-const peekPx=()=>parseInt(getComputedStyle(document.documentElement).getPropertyValue('--peek'))||150;
+const peekPx=()=>parseInt(getComputedStyle(document.documentElement).getPropertyValue('--peek'))||70;
 const sheetMax=()=>Math.max(0,panel.offsetHeight-peekPx());
 const sheetIsOpen=()=>panel.classList.contains('open');
 function setSheet(open){panel.classList.toggle('open',open);panel.style.transform='';}
